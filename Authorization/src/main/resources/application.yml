@@ -1,0 +1,93 @@
+spring:
+  application:
+    name: java-bff-service
+  kafka:
+
+    producer:
+      bootstrap-servers: kafka:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
+    consumer:
+      bootstrap-servers: kafka:9092
+      group-id: bff-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      properties:
+#        max.poll.records: 10
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_DRIVER}://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-test-query: SELECT 1
+      idle-timeout: 30000
+      connection-timeout: 30000
+      maximum-pool-size: 50
+      minimum-idle: 10
+      max-lifetime: 2000000
+      pool-name: SpringBootJPAHikariCP
+  liquibase:
+    drop-first: true
+    liquibase-schema: public
+    default-schema: public
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true #enable here
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: public
+  cache:
+    type: redis
+    cache-names:
+      - UserCache
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+feign:
+  client:
+    url:
+      deduplication: ${MANAGEMENT_HTTP_PROTOCOL}://${MANAGEMENT_HOST}:${MANAGEMENT_PORT}/${DEDUPLICATION_BASE_PATH}
+      enrichment: ${MANAGEMENT_HTTP_PROTOCOL}://${MANAGEMENT_HOST}:${MANAGEMENT_PORT}/${ENRICHMENT_BASE_PATH}
+      filter: ${MANAGEMENT_HTTP_PROTOCOL}://${MANAGEMENT_HOST}:${MANAGEMENT_PORT}/${FILTER_BASE_PATH}
+      analytic: ${MANAGEMENT_HTTP_PROTOCOL}://${MANAGEMENT_HOST}:${MANAGEMENT_PORT}/${ANALYTIC_BASE_PATH}
+
+token:
+  issuer: student
+  signing:
+    secret: 53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855
+  lifetime: 10m
+
+server:
+  port: ${APPLICATION_PORT}
+
+kafka:
+  producer:
+    default-topic: ${TOPIC_IN}
+  consumer:
+    topics: ${TOPIC_OUT}
+
+
+
+## CLICK_DRIVER = jdbc:clickhouse
+## CLICK_HOST = localhost
+## CLICK_PORT = 8123
+## CLICK_DB_NAME = default
+## CLICK_USERNAME = default
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus,info
+  endpoint:
+    prometheus:
+      access: read_only
+    health:
+      show-details: always
