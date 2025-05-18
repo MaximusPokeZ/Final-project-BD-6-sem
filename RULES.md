@@ -33,7 +33,7 @@ git commit -m "sometext"
 git push origin "твоя-ветка"
 ```
 
-### Создание PR как в РПКС
+### Создание PR
 
 base: main
 compare: твоя ветка
