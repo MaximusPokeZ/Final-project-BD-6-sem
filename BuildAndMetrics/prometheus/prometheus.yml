@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'spring-boot'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth:8084', 'management:8081']
+        labels:
+          group: 'spring-services'
+
+  - job_name: 'java-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: [ 'sifter:8082', 'selection:8083', 'padding:8085', 'analytics:8089']
